@@ -78,14 +78,24 @@ export default React.memo(({prefix, dataSource, dataChange, config, onClose, onO
               return {
                 ...d,
                 group,
-                fields: (d.fields || []).map(f => ({...f, defKey: f.defKey?.toLocaleLowerCase()})),
+                fields: (d.fields || []).map(f => ({
+                  ...f,
+                  defKey: f.defKey?.toLocaleLowerCase(),
+                  primaryKey: !!f.primaryKey,
+                  notNull: !!f.notNull,
+                })),
                 defKey: d.defKey.toLocaleLowerCase(),
               };
             } else if (dbData.flag === 'UPPERCASE') {
               return {
                 ...d,
                 group,
-                fields: (d.fields || []).map(f => ({...f, defKey: f.defKey?.toLocaleUpperCase()})),
+                fields: (d.fields || []).map(f => ({
+                  ...f,
+                  defKey: f.defKey?.toLocaleUpperCase(),
+                  primaryKey: !!f.primaryKey,
+                  notNull: !!f.notNull,
+                })),
                 defKey: d.defKey.toLocaleUpperCase(),
               };
             }
