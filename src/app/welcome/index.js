@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import {Progressbar, Modal, UpdateMessage, FormatMessage, Button} from 'components';
+import {Progressbar, Modal, UpdateMessage, FormatMessage} from 'components';
 import { fail, success, pageType, CONFIG } from '../../lib/variable';
 import './style/index.less';
 import {
@@ -41,24 +41,25 @@ const Welcome = React.memo(({ prefix, getUserData, config, ...restProps }) => {
     // 第一个页面打开 读取各个配置文件
     getUserData();
   }, []);
-  const updateApp = () => {
-    if (platform === 'json') {
-      // eslint-disable-next-line global-require,import/no-extraneous-dependencies,no-shadow
-      const { ipcRenderer } = require('electron');
-      ipcRenderer.send('update');
-      restProps.openLoading(`${FormatMessage.string({id: 'download'})}[${0}%]`);
-      ipcRenderer.on('updateProgress', (event, progressObj) => {
-        restProps.openLoading(`${FormatMessage.string({id: 'download'})}[${progressObj.percent.toFixed(2)}%]`);
-      });
-      ipcRenderer.on('updateEnd', () => {
-        restProps.closeLoading();
-        Modal.error({
-          title: FormatMessage.string({id: 'optFail'}),
-          message: FormatMessage.string({id: 'newVersionError'}),
-        });
-      });
-    }
-  };
+  // const updateApp = () => {
+  //   if (platform === 'json') {
+  //     // eslint-disable-next-line global-require,import/no-extraneous-dependencies,no-shadow
+  //     const { ipcRenderer } = require('electron');
+  //     ipcRenderer.send('update');
+  //     restProps.openLoading(`${FormatMessage.string({id: 'download'})}[${0}%]`);
+  //     ipcRenderer.on('updateProgress', (event, progressObj) => {
+  // eslint-disable-next-line max-len
+  //       restProps.openLoading(`${FormatMessage.string({id: 'download'})}[${progressObj.percent.toFixed(2)}%]`);
+  //     });
+  //     ipcRenderer.on('updateEnd', () => {
+  //       restProps.closeLoading();
+  //       Modal.error({
+  //         title: FormatMessage.string({id: 'optFail'}),
+  //         message: FormatMessage.string({id: 'newVersionError'}),
+  //       });
+  //     });
+  //   }
+  // };
   useEffect(() => {
     if (config.result === success) {
       // 读取配置信息成功
