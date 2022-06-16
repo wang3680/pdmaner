@@ -33,12 +33,14 @@ PDManer=PDMan+er(chiner的er部分，ER也表示关系图的意思)，“元数�
 # 三、软件下载
 https://gitee.com/robergroup/pdmaner/releases
 
+
 # 四、特别说明
 1. 如果你只是为了使用，请直接下载安装版。
 2. 如果你为了研究，你可以自行clone代码到本地研究源代码，阅读源代码需要较高的前端基础。
 3. 安装文件都是基于当时master分支打包的，不存在编译不通过问题。
 4. 作者很忙，时间有限，作者不解答初级前端问题，还请多多理解支持。
 5. 非常欢迎提PR的同学
+6. Java部分代码:(https://gitee.com/robergroup/chiner-java)
 
 # 五、操作手册地址
 1. [官网操作手册-语雀版](https://www.yuque.com/pdmaner/docs)
