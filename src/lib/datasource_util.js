@@ -1021,6 +1021,8 @@ export const transform = (f, dataSource, code, type = 'id', codeType = 'dbDDL') 
         temp.domain = type === 'id' ? (domain.defName || domain.defKey) : f.domain;
         temp.type = mapping?.[code] || '';
         temp.dbType = mapping?.[db] || f.type;
+        temp.len = domain.len === undefined ? '' : domain.len;
+        temp.scale = domain.scale === undefined ? '' : domain.scale;
       }
     } else {
       temp.type = mappings.filter(m => m[db] === f.type)[0]?.[code] || f.type;
