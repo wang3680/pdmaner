@@ -636,7 +636,9 @@ export default ({data, dataSource, renderReady, updateDataSource, validateTableS
       return {
         ...dataSourceRef.current,
         entities: dataSourceRef.current.entities.concat(cells.map(c => ({
-          ..._.omit(c.data, ['maxWidth', 'count']),
+          ...(c.data ? dataSourceRef.current
+              .entities.filter(e => e.defKey === c.data.copyDefKey)[0] : {}),
+          ..._.pick(c.data, ['id', 'defKey']),
           ...initData,
         }))),
         viewGroups: (dataSourceRef.current.viewGroups || []).map((g) => {
@@ -696,7 +698,7 @@ export default ({data, dataSource, renderReady, updateDataSource, validateTableS
             const entityId = Math.uuid();
             keys.push({defKey: newKey});
             c.setProp('originKey', entityId, {ignoreHistory : true});
-            c.setData({defKey: newKey}, {ignoreHistory : true, relation: true});
+            c.setData({defKey: newKey, copyDefKey}, {ignoreHistory : true, relation: true});
             c.setData({id: entityId}, {ignoreHistory : true, relation: true});
             return {
               data: c.data,
