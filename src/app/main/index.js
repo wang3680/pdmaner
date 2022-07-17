@@ -163,6 +163,7 @@ const Index = React.memo(({getUserData, open, openTemplate, config, common, pref
       Modal.error({
         title: FormatMessage.string({id: 'optFail'}),
         message: newData.result.message,
+        id: 'saveError',
       });
     }
   };

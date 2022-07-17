@@ -75,15 +75,23 @@ export const Modal = DragCom(React.memo(React.forwardRef(({prefix, title, onClos
   );
 })));
 
+const modalInstance = {};
 export const openModal = (com, params) => {
   const dom = document.createElement('div');
   document.body.appendChild(dom);
   const close = () => {
     const result = ReactDom.unmountComponentAtNode(dom);
     if (result) {
+      if (params.id) {
+        delete modalInstance[params.id];
+      }
       dom.parentElement.removeChild(dom);
     }
   };
+  if (params.id) {
+    modalInstance[params.id]?.close();
+    modalInstance[params.id] = {close};
+  }
   const ModalCompose = () => {
     const { title, small, buttons, status, fullScreen, bodyStyle,
       modalStyle, contentStyle, closeable, focusFirst, onEnter } = params;
@@ -119,7 +127,7 @@ export const openModal = (com, params) => {
   };
 };
 
-Modal.error = ({title, message, bodyStyle = {}, contentStyle = {}}) => {
+Modal.error = ({title, message, bodyStyle = {}, contentStyle = {}, id}) => {
   return openModal(<React.Fragment>
     <span style={{overflow: 'auto', padding: '5px 0px 15px 0px'}}>{message}</span>
   </React.Fragment>, {
@@ -128,6 +136,7 @@ Modal.error = ({title, message, bodyStyle = {}, contentStyle = {}}) => {
     title: <span><Icon type='fa-times'/>{title}</span>,
     small: true,
     status: 'error',
+    id,
   });
 };
 
