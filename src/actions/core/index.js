@@ -260,6 +260,7 @@ export const readProject = (path, title, getState, type, isDemoProject) => {
           dispatch(closeLoading(STATUS[2], err));
         } else if (!isDemoProject) {
           const newData = transformationData(data);
+          // console.log(newData);
           // 将打开的项目记录存储到用户信息中
           addHistory({
             describe: newData.describe || '',

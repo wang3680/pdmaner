@@ -8,6 +8,7 @@ var host = profile.host;
 var port = profile.port;
 var protocol = profile.protocol;
 var WebpackDevServer = require('webpack-dev-server');
+const {createProxyMiddleware} = require("http-proxy-middleware");
 
 config.entry.app.unshift(`webpack-dev-server/client?${protocol}://${host}:${port}/`);
 
@@ -16,6 +17,15 @@ var compiler = webpack(config);
 var devServer = new WebpackDevServer(compiler, {
     stats: { colors: true },
     contentBase: path.resolve(__dirname, '../public'),
+    proxy:{
+        '/dict_api':{
+            target: 'http://198.60.1.1:18089',
+            changeOrigin: true,
+            pathRewrite: {
+                '^/dict_api': '/'
+            }
+        }
+    }
 });
 
 devServer.listen(port, host, function () {

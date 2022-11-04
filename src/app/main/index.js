@@ -1,6 +1,8 @@
 import React, {useState, useMemo, useEffect, useRef} from 'react';
 import _ from 'lodash/object';
 import moment from 'moment';
+import axios from 'axios';
+
 import {
   Menu,
   Tab,
@@ -82,6 +84,7 @@ const Index = React.memo(({getUserData, open, openTemplate, config, common, pref
   tabsRef.current = tabs;
   const dataSourceRef = useRef({});
   dataSourceRef.current = restProps.dataSource;
+  // console.log(dataSourceRef.current);
   const appCodeRef = useRef(null);
   const menuContainerWidth = 290;
   const menuMinWidth = 50;
@@ -1207,11 +1210,23 @@ const Index = React.memo(({getUserData, open, openTemplate, config, common, pref
       }),
     };
   };
+  //添加首次加载标准字段
+  const [dictData,setDictData] = useState([]);
+  // useMemo(async () => {
+  //   const apiData = async () => {
+  //     let data = await axios.get('/dict_api/getApi');
+  //     return data;
+  //   };
+  //   let aa = await apiData();
+  //   console.log(aa.data);
+  //   setDictData(aa.data);
+  // },[]);
   const standardFieldMemo = useMemo(() => {
     return <StandardField
       ref={standardFieldRef}
       activeKey={activeKey}
       dataSource={restProps.dataSource}
+      dictData={dictData}
       updateDataSource={restProps.update}
     />;
   }, [restProps.dataSource, activeKey]);

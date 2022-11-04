@@ -1,6 +1,7 @@
-import React, {useState, useRef, useImperativeHandle, forwardRef, useMemo, useEffect} from 'react';
+import React, {useState, useRef, useImperativeHandle,useMemo, forwardRef, useEffect} from 'react';
 import moment from 'moment';
-
+import axios from 'axios';
+import localStorage from 'localStorage';
 import {
   Button,
   Download,
@@ -9,10 +10,11 @@ import {
   Modal,
   openModal,
   SearchInput,
-  Tooltip, Upload,
+  Tooltip, Upload,Message,
 } from 'components';
 import _ from 'lodash/object';
-import StandardFieldsEdit from './StandardFieldsEdit';
+// import StandardFieldsEdit from './StandardFieldsEdit';
+import LoginConfig from './LoginConfig';
 import StandardFieldsListSelect from './StandardFieldsListSelect';
 import {getPrefix} from '../../../lib/prefixUtil';
 import { separator } from '../../../../profile';
@@ -25,7 +27,7 @@ const OptHelp = ({currentPrefix}) => {
   </div>;
 };
 
-export default forwardRef(({prefix, dataSource, updateDataSource, activeKey}, ref) => {
+export default forwardRef(({prefix, dataSource,dictData, updateDataSource, activeKey},     ref) => {
   const currentPrefix = getPrefix(prefix);
   const [fold, setFold] = useState(true);
   const [expandMenu, setExpandMenu] = useState([]);
@@ -35,6 +37,8 @@ export default forwardRef(({prefix, dataSource, updateDataSource, activeKey}, re
   const contentRef = useRef(null);
   const dataSourceRef = useRef(dataSource);
   dataSourceRef.current = dataSource;
+  const fieldData = useRef(dictData);
+  // console.info(dataSourceRef);
   const iconClick = () => {
     setFold(pre => !pre);
   };
@@ -63,14 +67,15 @@ export default forwardRef(({prefix, dataSource, updateDataSource, activeKey}, re
   const onChange = (e) => {
     setFilterValue(e.target.value);
   };
-  const finalData = useMemo(() => (dataSource.standardFields || []).map((g) => {
+  // console.info(dictData);
+  const finalData = useMemo(() => (fieldData.data || []).map((g) => {
     const reg = new RegExp((filterValue || '').replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
     return {
       ...g,
       fields: (g.fields || [])
           .filter(f => reg.test(getKey(f))),
     };
-  }), [dataSource.standardFields, filterValue]);
+  }), [fieldData.data, filterValue]);
   useEffect(() => {
     setExpandMenu(finalData.map(d => d.id));
   }, [filterValue]);
@@ -111,7 +116,7 @@ export default forwardRef(({prefix, dataSource, updateDataSource, activeKey}, re
         twinkle = id;
       }
     }
-    modal = openModal(<StandardFieldsEdit
+    modal = openModal(<LoginConfig
       twinkle={twinkle}
       prefix={prefix}
       dataChange={dataChange}
@@ -130,18 +135,38 @@ export default forwardRef(({prefix, dataSource, updateDataSource, activeKey}, re
         </Button>,
       ],
     });
+      // modal = openModal(<StandardFieldsEdit
+      //     twinkle={twinkle}
+      //     prefix={prefix}
+      //     dataChange={dataChange}
+      //     dataSource={dataSource}
+      //     updateDataSource={updateDataSource}
+      // />, {
+      //     closeable: false,
+      //     bodyStyle: {width: '80%'},
+      //     title: FormatMessage.string({id: 'standardFields.editStandardFields'}),
+      //     buttons: [
+      //         <Button key='onOK' onClick={onOK} type='primary'>
+      //             <FormatMessage id='button.ok'/>
+      //         </Button>,
+      //         <Button key='onCancel' onClick={onCancel}>
+      //             <FormatMessage id='button.cancel'/>
+      //         </Button>,
+      //     ],
+      // });
   };
-  const exportStandardFields = () => {
-    const standardFields = _.get(dataSource, 'standardFields', []);
-    Download(
-        [JSON.stringify(standardFields.map(s => ({
-          ...s,
-          fields: s.fields?.map(f => reset(f, dataSource,['id', 'defKey'])),
-        })), null, 2)],
-        'application/json',
-      `${dataSource.name}-${FormatMessage.string({id: 'standardFields.standardFieldsLib'})}-${moment().format('YYYYMDHHmmss')}.json`,
-     );
-  };
+  // const exportStandardFields = () => {
+  //   const standardFields = _.get(dataSource, 'standardFields', []);
+  //   Download(
+  //       [JSON.stringify(standardFields.map(s => ({
+  //         ...s,
+  //         fields: s.fields?.map(f => reset(f, dataSource,['id', 'defKey'])),
+  //       })), null, 2)],
+  //       'application/json',
+  // eslint-disable-next-line max-len
+  //     `${dataSource.name}-${FormatMessage.string({id: 'standardFields.standardFieldsLib'})}-${moment().format('YYYYMDHHmmss')}.json`,
+  //    );
+  // };
   const importStandardFields = () => {
     Upload('application/json', (data) => {
       try {
@@ -188,6 +213,28 @@ export default forwardRef(({prefix, dataSource, updateDataSource, activeKey}, re
       return file.name.endsWith('.json');
     });
   };
+  const reLoginGetFields = () => {
+    let fieldInfo = JSON.parse(localStorage.getItem('fieldInfo'));
+    if(fieldInfo){
+      console.info(fieldInfo);
+      let loginUrl = '/dict_api/g/hsxone.omc/v/submitLogin';
+      let fieldsUrl = '/dict_api/g/hsxone.omc/v/submitLogin';
+      let param = {operator_code:fieldInfo.userName,password:fieldInfo.password};
+      let data = axios.post(loginUrl, param).then((res) => {
+        if(res.data.data[0].return_code === 0){
+          // console.info('成功');
+          axios.get(fieldsUrl).then((resField) => {
+            fieldData.data = resField;
+          });
+        }else {
+          Message.error({title: res.data.data[0].error_info});
+        }
+
+      });
+    }else {
+      Message.error({title: '请维护登录名及密码，谢谢。'});
+    }
+  };
   useImperativeHandle(ref, () => {
     return {
       openEdit: onClick,
@@ -230,8 +277,11 @@ export default forwardRef(({prefix, dataSource, updateDataSource, activeKey}, re
           <Tooltip title={<OptHelp currentPrefix={currentPrefix}/>} force placement='topLeft'>
             <IconTitle type='icon-xinxi'/>
           </Tooltip>
-          <IconTitle title={<FormatMessage id='standardFields.importStandardFieldsLib'/>} type='icon-daoru' onClick={importStandardFields}/>
-          <IconTitle title={<FormatMessage id='standardFields.exportStandardFieldsLib'/>} type='icon-daochu' onClick={exportStandardFields}/>
+          {/* eslint-disable-next-line max-len */}
+          {/*<IconTitle title={<FormatMessage id='standardFields.importStandardFieldsLib'/>} type='icon-daoru' onClick={importStandardFields}/>*/}
+          <IconTitle title={<FormatMessage id='standardFields.importStandardFieldsLib'/>} type='icon-daoru' onClick={reLoginGetFields}/>
+          {/* eslint-disable-next-line max-len */}
+          {/*<IconTitle title={<FormatMessage id='standardFields.exportStandardFieldsLib'/>} type='icon-daochu' onClick={exportStandardFields}/>*/}
           <IconTitle title={<FormatMessage id='standardFields.setting'/>} type='icon-weihu' onClick={onClick}/>
         </span>
       </div>
