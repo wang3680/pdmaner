@@ -87,7 +87,7 @@ function createWindow() {
     autoUpdater.quitAndInstall();
   })
   ipcMain.on('update', () => {
-    autoUpdater.checkForUpdates()
+    // autoUpdater.checkForUpdates()
   });
   ipcMain.on('data', (e, args ) => {
     try {

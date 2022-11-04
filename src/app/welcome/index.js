@@ -69,18 +69,19 @@ const Welcome = React.memo(({ prefix, getUserData, config, ...restProps }) => {
         updateTitle(FormatMessage.string({id: 'welcomeVersionTitle'}));
         getVersion().then((res) => {
           if (compareVersion(res.version)) {
-            Modal.info({
-              title: FormatMessage.string({id: 'newVersion'}),
-              message: <UpdateMessage data={res}/>,
-              closeable: !res.forceUpdate,
-              bodyStyle: {width: 'auto'},
-              contentStyle: {width: '800px'},
-              // eslint-disable-next-line max-len
-              // buttons: process.platform === 'win32' ? [<Button type='primary' key='ok' onClick={updateApp}>
-              //   {FormatMessage.string({id: 'update'})}
-              // </Button>] : [],
-              buttons: [],
-            });
+            // Modal.info({
+            //   title: FormatMessage.string({id: 'newVersion'}),
+            //   message: <UpdateMessage data={res}/>,
+            //   closeable: !res.forceUpdate,
+            //   bodyStyle: {width: 'auto'},
+            //   contentStyle: {width: '800px'},
+            //   // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
+            //   // buttons: process.platform === 'win32' ? [<Button type='primary' key='ok' onClick={updateApp}>
+            //   //   {FormatMessage.string({id: 'update'})}
+            //   // </Button>] : [],
+            //   buttons: [],
+            // });
           }
         }).finally(() => {
          updatePercent(100);
