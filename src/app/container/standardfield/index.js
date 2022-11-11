@@ -1,15 +1,14 @@
 import React, {useState, useRef, useImperativeHandle,useMemo, forwardRef, useEffect} from 'react';
-import moment from 'moment';
 import axios from 'axios';
 import localStorage from 'localStorage';
 import {
   Button,
-  Download,
   FormatMessage,
   Icon, IconTitle,
   Modal,
   openModal,
   SearchInput,
+  Loading,
   Tooltip, Upload,Message,
 } from 'components';
 import _ from 'lodash/object';
@@ -20,6 +19,8 @@ import {getPrefix} from '../../../lib/prefixUtil';
 import { separator } from '../../../../profile';
 import {validateStandardFields, reset} from '../../../lib/datasource_util';
 import './style/index.less';
+import {openLoading} from '../../../components';
+import {closeLoading} from '../../../components/loading';
 
 const OptHelp = ({currentPrefix}) => {
   return <div className={`${currentPrefix}-standard-fields-list-title-help`}>
@@ -37,7 +38,8 @@ export default forwardRef(({prefix, dataSource,dictData, updateDataSource, activ
   const contentRef = useRef(null);
   const dataSourceRef = useRef(dataSource);
   dataSourceRef.current = dataSource;
-  const fieldData = useRef(dictData);
+  const [fieldDataApi, setFieldDataApi] = useState('');
+  // const fieldData = useRef(dictData);
   // console.info(dataSourceRef);
   const iconClick = () => {
     setFold(pre => !pre);
@@ -68,14 +70,14 @@ export default forwardRef(({prefix, dataSource,dictData, updateDataSource, activ
     setFilterValue(e.target.value);
   };
   // console.info(dictData);
-  const finalData = useMemo(() => (fieldData.data || []).map((g) => {
+  const finalData = useMemo(() => (fieldDataApi || []).map((g) => {
     const reg = new RegExp((filterValue || '').replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
     return {
       ...g,
       fields: (g.fields || [])
           .filter(f => reg.test(getKey(f))),
     };
-  }), [fieldData.data, filterValue]);
+  }), [fieldDataApi, filterValue]);
   useEffect(() => {
     setExpandMenu(finalData.map(d => d.id));
   }, [filterValue]);
@@ -216,20 +218,24 @@ export default forwardRef(({prefix, dataSource,dictData, updateDataSource, activ
   const reLoginGetFields = () => {
     let fieldInfo = JSON.parse(localStorage.getItem('fieldInfo'));
     if(fieldInfo){
-      console.info(fieldInfo);
-      let loginUrl = '/dict_api/g/hsxone.omc/v/submitLogin';
-      let fieldsUrl = '/dict_api/g/hsxone.omc/v/submitLogin';
+      let loginUrl = '/login_api/g/hsxone.omc/v/submitLogin';
+      let fieldsUrl = 'http://127.0.0.1:13001/MetaFieldController/getMetaFieldToJson';
       let param = {operator_code:fieldInfo.userName,password:fieldInfo.password};
       let data = axios.post(loginUrl, param).then((res) => {
-        if(res.data.data[0].return_code === 0){
-          // console.info('成功');
+        openLoading('加载中');
+        if(res.data.data[0].return_code === '0'){
           axios.get(fieldsUrl).then((resField) => {
-            fieldData.data = resField;
+            setFieldDataApi(resField.data);
+            closeLoading();
           });
         }else {
+          closeLoading();
           Message.error({title: res.data.data[0].error_info});
         }
 
+      }).catch((e) => {
+        closeLoading();
+        Message.error({title:`网络错误${e}`});
       });
     }else {
       Message.error({title: '请维护登录名及密码，谢谢。'});

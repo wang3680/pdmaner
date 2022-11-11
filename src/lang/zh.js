@@ -1,6 +1,6 @@
 export default {
     system: {
-        title: 'PDManer',
+        title: 'HTZQ',
         template: '当前项目为模板项目',
         err: '出错了',
         errorMessage: '程序出现异常，请前往日志文件查看出错日志：',
