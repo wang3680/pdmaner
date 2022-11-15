@@ -26,7 +26,7 @@ var devServer = new WebpackDevServer(compiler, {
             }
         },
         '/field_api':{
-            target: 'http://127.0.0.1:5000',
+            target: 'http://198.60.1.1:18089',
             changeOrigin: true,
             pathRewrite: {
                 '^/field_api': '/'

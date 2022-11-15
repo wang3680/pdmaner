@@ -219,7 +219,7 @@ export default forwardRef(({prefix, dataSource,dictData, updateDataSource, activ
     let fieldInfo = JSON.parse(localStorage.getItem('fieldInfo'));
     if(fieldInfo){
       let loginUrl = '/login_api/g/hsxone.omc/v/submitLogin';
-      let fieldsUrl = 'http://127.0.0.1:13001/MetaFieldController/getMetaFieldToJson';
+      let fieldsUrl = '/field_api/bigdata/DBReport-server/V1.1/MetaFieldController/getMetaFieldToJson';
       let param = {operator_code:fieldInfo.userName,password:fieldInfo.password};
       let data = axios.post(loginUrl, param).then((res) => {
         openLoading('加载中');
