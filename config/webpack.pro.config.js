@@ -26,6 +26,24 @@ if (platform === 'json') {
 
 module.exports = {
   mode: "production",
+  // devServer:{
+  //   proxy:{
+  //     '/login_api':{
+  //       target: 'http://198.60.1.1:18089',
+  //       changeOrigin: true,
+  //       pathRewrite: {
+  //         '^/login_api': '/'
+  //       }
+  //     },
+  //     '/field_api':{
+  //       target: 'http://198.60.1.1:18089',
+  //       changeOrigin: true,
+  //       pathRewrite: {
+  //         '^/field_api': '/'
+  //       }
+  //     }
+  //   }
+  // },
   entry: {
     app: [require.resolve('@babel/polyfill'),
       path.resolve(__dirname, '../src/lib/Math'),

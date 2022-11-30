@@ -1,6 +1,7 @@
 import React, {useState, useRef, useImperativeHandle,useMemo, forwardRef, useEffect} from 'react';
 import axios from 'axios';
 import localStorage from 'localStorage';
+
 import {
   Button,
   FormatMessage,
@@ -218,8 +219,13 @@ export default forwardRef(({prefix, dataSource,dictData, updateDataSource, activ
   const reLoginGetFields = () => {
     let fieldInfo = JSON.parse(localStorage.getItem('fieldInfo'));
     if(fieldInfo){
-      let loginUrl = '/login_api/g/hsxone.omc/v/submitLogin';
-      let fieldsUrl = '/field_api/bigdata/DBReport-server/V1.1/MetaFieldController/getMetaFieldToJson';
+      let loginUrl = fieldInfo.loginUrl;
+      let fieldsUrl = fieldInfo.fieldUrl;
+      // let loginUrl = '/login_api/g/hsxone.omc/v/submitLogin';
+      // eslint-disable-next-line max-len
+      // let fieldsUrl = '/field_api/bigdata/DBReport-server/V1.1/MetaFieldController/getMetaFieldToJson';
+      // let loginUrl = 'http://198.60.1.1:18089/g/hsxone.omc/v/submitLogin';
+      // let fieldsUrl = 'http://198.60.1.1:18089/bigdata/DBReport-server/V1.1/MetaFieldController/getMetaFieldToJson';
       let param = {operator_code:fieldInfo.userName,password:fieldInfo.password};
       let data = axios.post(loginUrl, param).then((res) => {
         openLoading('加载中');
@@ -227,6 +233,9 @@ export default forwardRef(({prefix, dataSource,dictData, updateDataSource, activ
           axios.get(fieldsUrl).then((resField) => {
             setFieldDataApi(resField.data);
             closeLoading();
+          }).catch((e) => {
+            closeLoading();
+            Message.error({title:`网络错误${e}`});
           });
         }else {
           closeLoading();
