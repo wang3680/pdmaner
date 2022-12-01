@@ -18,18 +18,18 @@ var devServer = new WebpackDevServer(compiler, {
     stats: { colors: true },
     contentBase: path.resolve(__dirname, '../public'),
     proxy:{
-        '/login_api':{
+        '/jres_api':{
             target: 'http://198.60.1.1:18089',
             changeOrigin: true,
             pathRewrite: {
-                '^/login_api': '/'
+                '^/jres_api': '/'
             }
         },
-        '/field_api':{
-            target: 'http://198.60.1.1:18089',
+        '/test_api':{
+            target: 'http://192.168.69.213:5000',
             changeOrigin: true,
             pathRewrite: {
-                '^/field_api': '/'
+                '^/test_api': '/'
             }
         }
     }

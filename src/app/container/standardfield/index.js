@@ -221,9 +221,9 @@ export default forwardRef(({prefix, dataSource,dictData, updateDataSource, activ
     if(fieldInfo){
       let loginUrl = fieldInfo.loginUrl;
       let fieldsUrl = fieldInfo.fieldUrl;
-      // let loginUrl = '/login_api/g/hsxone.omc/v/submitLogin';
+      // let loginUrl = '/jres_api/g/hsxone.omc/v/submitLogin';
       // eslint-disable-next-line max-len
-      // let fieldsUrl = '/field_api/bigdata/DBReport-server/V1.1/MetaFieldController/getMetaFieldToJson';
+      // let fieldsUrl = '/jres_api/bigdata/DBReport-server/V1.1/MetaFieldController/getMetaFieldToJson';
       // let loginUrl = 'http://198.60.1.1:18089/g/hsxone.omc/v/submitLogin';
       // let fieldsUrl = 'http://198.60.1.1:18089/bigdata/DBReport-server/V1.1/MetaFieldController/getMetaFieldToJson';
       let param = {operator_code:fieldInfo.userName,password:fieldInfo.password};
